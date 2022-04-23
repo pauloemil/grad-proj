@@ -12,12 +12,12 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 24,
     fontWeight: "bold",
-    color: "white",
+    color: "#3a3b42",
     marginBottom: 10,
   },
   container: {
-    height: "20%",
-    backgroundColor: "#9515a1",
+    height: "15%",
+    backgroundColor: "#f3f4f7",
     borderBottomLeftRadius: 10,
     borderBottomRightRadius: 10,
     alignItems: "center",

@@ -1,12 +1,24 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { View, Text, StyleSheet, Image, Dimensions } from "react-native";
 
-const ConversationItem = ({ imageUrl, name, lastMessage, date }) => {
+const ConversationItem = ({ id, category, name, lastMessage, date }) => {
+  const [imagePath, setImagePath] = useState(null);
+  useEffect(() => {
+    if (category === "Arts & Entertainments")
+      setImagePath(require("../../assets/artsEnter.png"));
+    else if (category === "Food")
+      setImagePath(require("../../assets/foodanddrinks.png"));
+    else if (category === "Sports")
+      setImagePath(require("../../assets/sports.png"));
+    else if (category === "Traviling")
+      setImagePath(require("../../assets/travel.png"));
+  }, [category]);
+
   return (
     <View style={styles.container}>
       <View style={styles.wrapper}>
         <View style={styles.leftWrapper}>
-          <Image style={styles.image} source={imageUrl} />
+          <Image style={styles.image} source={imagePath} />
           <View style={styles.leftText}>
             <Text style={styles.nameText}>{name}</Text>
             <Text numberOfLines={1} style={styles.messageText}>

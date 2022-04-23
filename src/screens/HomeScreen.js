@@ -3,12 +3,16 @@ import { View, StyleSheet, Dimensions } from "react-native";
 import ConversationList from "../components/HomeScreenComponents/ConversationList";
 import FloatingStartingButton from "../components/HomeScreenComponents/FloatingStartingButton";
 import Header from "../components/HomeScreenComponents/Header";
-const HomeScreen = () => {
+
+const HomeScreen = ({ navigation }) => {
   return (
     <View style={styles.container}>
       <Header />
-      <ConversationList style={styles.list} />
-      <FloatingStartingButton style={styles.floatingButton} />
+      <ConversationList navigation={navigation} style={styles.list} />
+      <FloatingStartingButton
+        navigation={navigation}
+        style={styles.floatingButton}
+      />
     </View>
   );
 };

@@ -1,161 +1,44 @@
 import React from "react";
-import { FlatList, StyleSheet, View, Dimensions } from "react-native";
+
+import { FlatList, StyleSheet, View, TouchableOpacity } from "react-native";
+
 import ConversationItem from "./ConversationItem";
 
-const ConversationList = () => {
-  var list = [
-    {
-      imageUrl: require("../../assets/artsEnter.png"),
-      name: "Going to cenima (Start)",
-      lastMessage: "Thanks for the help",
-      date: "Yesterday",
-    },
-    {
-      imageUrl: require("../../assets/foodanddrinks.png"),
-      name: "Ordering burger",
-      lastMessage:
-        "This is really bad taste and i don't like it, i'll give you 2 stars only",
-      date: "28/3/2022",
-    },
-    {
-      imageUrl: require("../../assets/sports.png"),
-      name: "Football match",
-      lastMessage: "That was very good goal, well played",
-      date: "27/3/2022",
-    },
-    {
-      imageUrl: require("../../assets/travel.png"),
-      name: "Traviling to Asia",
-      lastMessage: "Bye bye mate, it was nice to see you",
-      date: "26/3/2022",
-    },
-    {
-      imageUrl: require("../../assets/artsEnter.png"),
-      name: "Going to cenima",
-      lastMessage: "Thanks for the help",
-      date: "Yesterday",
-    },
-    {
-      imageUrl: require("../../assets/foodanddrinks.png"),
-      name: "Ordering burger",
-      lastMessage:
-        "This is really bad taste and i don't like it, i'll give you 2 stars only",
-      date: "28/3/2022",
-    },
-    {
-      imageUrl: require("../../assets/sports.png"),
-      name: "Football match",
-      lastMessage: "That was very good goal, well played",
-      date: "27/3/2022",
-    },
-    {
-      imageUrl: require("../../assets/travel.png"),
-      name: "Traviling to Asia",
-      lastMessage: "Bye bye mate, it was nice to see you",
-      date: "26/3/2022",
-    },
-    {
-      imageUrl: require("../../assets/artsEnter.png"),
-      name: "Going to cenima",
-      lastMessage: "Thanks for the help",
-      date: "Yesterday",
-    },
-    {
-      imageUrl: require("../../assets/foodanddrinks.png"),
-      name: "Ordering burger",
-      lastMessage:
-        "This is really bad taste and i don't like it, i'll give you 2 stars only",
-      date: "28/3/2022",
-    },
-    {
-      imageUrl: require("../../assets/sports.png"),
-      name: "Football match",
-      lastMessage: "That was very good goal, well played",
-      date: "27/3/2022",
-    },
-    {
-      imageUrl: require("../../assets/travel.png"),
-      name: "Traviling to Asia",
-      lastMessage: "Bye bye mate, it was nice to see you",
-      date: "26/3/2022",
-    },
-    {
-      imageUrl: require("../../assets/travel.png"),
-      name: "Traviling to Asia",
-      lastMessage: "Bye bye mate, it was nice to see you",
-      date: "26/3/2022",
-    },
-    {
-      imageUrl: require("../../assets/artsEnter.png"),
-      name: "Going to cenima",
-      lastMessage: "Thanks for the help",
-      date: "Yesterday",
-    },
-    {
-      imageUrl: require("../../assets/foodanddrinks.png"),
-      name: "Ordering burger",
-      lastMessage:
-        "This is really bad taste and i don't like it, i'll give you 2 stars only",
-      date: "28/3/2022",
-    },
-    {
-      imageUrl: require("../../assets/sports.png"),
-      name: "Football match",
-      lastMessage: "That was very good goal, well played",
-      date: "27/3/2022",
-    },
-    {
-      imageUrl: require("../../assets/travel.png"),
-      name: "Traviling to Asia",
-      lastMessage: "Bye bye mate, it was nice to see you",
-      date: "26/3/2022",
-    },
-    {
-      imageUrl: require("../../assets/travel.png"),
-      name: "Traviling to Asia",
-      lastMessage: "Bye bye mate, it was nice to see you",
-      date: "26/3/2022",
-    },
-    {
-      imageUrl: require("../../assets/artsEnter.png"),
-      name: "Going to cenima",
-      lastMessage: "Thanks for the help",
-      date: "Yesterday",
-    },
-    {
-      imageUrl: require("../../assets/foodanddrinks.png"),
-      name: "Ordering burger",
-      lastMessage:
-        "This is really bad taste and i don't like it, i'll give you 2 stars only",
-      date: "28/3/2022",
-    },
-    {
-      imageUrl: require("../../assets/sports.png"),
-      name: "Football match",
-      lastMessage: "That was very good goal, well played",
-      date: "27/3/2022",
-    },
-    {
-      imageUrl: require("../../assets/travel.png"),
-      name: "Traviling to Asia (Ending)",
-      lastMessage: "Bye bye mate, it was nice to see you",
-      date: "26/3/2022",
-    },
-  ];
+import { useSelector, useDispatch } from "react-redux";
+import { setSelectedConversations } from "../../redux/conversationsActions";
+
+const ConversationList = ({ navigation }) => {
+  const { conversations } = useSelector((state) => state.conversationsReducer);
+  const dispatch = useDispatch();
+  const handleSelect = (id) => {
+    dispatch(setSelectedConversations(id));
+  };
   return (
     <View style={styles.container}>
       <FlatList
         showsVerticalScrollIndicator={false}
         keyExtractor={(item, index) => index}
         style={styles.list}
-        data={list}
+        data={conversations}
         renderItem={({ item }) => (
-          <ConversationItem
-            imageUrl={item.imageUrl}
-            name={item.name}
-            lastMessage={item.lastMessage}
-            date={item.date}
-          />
+          <TouchableOpacity
+            onPress={() => {
+              navigation.navigate("Conversation", {
+                name: item.name,
+                id: item.id,
+                category: item.category,
+              });
+              handleSelect(item.id);
+            }}
+          >
+            <ConversationItem
+              id={item.id}
+              category={item.category}
+              name={item.name}
+              lastMessage={item.lastMessage}
+              date={item.date}
+            />
+          </TouchableOpacity>
         )}
       />
     </View>
@@ -163,7 +46,7 @@ const ConversationList = () => {
 };
 const styles = StyleSheet.create({
   container: {
-    height: "80%",
+    height: "85%",
   },
 });
 export default ConversationList;
