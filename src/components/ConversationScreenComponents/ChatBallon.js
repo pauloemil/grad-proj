@@ -1,10 +1,11 @@
-import React from "react";
+import React, { useState } from "react";
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import * as Speech from "expo-speech";
 import { useSelector } from "react-redux";
 
 const ChatBallon = ({ messageText, meSend, date }) => {
   const { gender } = useSelector((state) => state.conversationsReducer);
+  const [isSpeaking, setIsSpeaking] = useState(false);
 
   const listAllVoiceOptions = async () => {
     let voices = await Speech.getAvailableVoicesAsync();
@@ -17,6 +18,9 @@ const ChatBallon = ({ messageText, meSend, date }) => {
     };
     Speech.speak(messageText, options);
   };
+  const stopSpeaking = () => {
+    Speech.stop();
+  };
 
   React.useEffect(() => {
     // listAllVoiceOptions();
@@ -25,7 +29,11 @@ const ChatBallon = ({ messageText, meSend, date }) => {
   return (
     <TouchableOpacity
       onPress={() => {
-        if (meSend) speak();
+        if (meSend) {
+          if (!isSpeaking) speak();
+          else stopSpeaking();
+          setIsSpeaking(!isSpeaking);
+        }
       }}
     >
       <View
