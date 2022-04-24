@@ -10,6 +10,7 @@
     "eject": "expo eject"
   },
   "dependencies": {
+    "@eva-design/eva": "^2.1.1",
     "@react-native-voice/voice": "^3.2.3",
     "@react-navigation/native": "^6.0.10",
     "@react-navigation/native-stack": "^6.6.1",
@@ -27,6 +28,7 @@
     "react-native-safe-area-context": "3.3.2",
     "react-native-screens": "~3.10.1",
     "react-native-select-dropdown": "^1.9.0",
+    "react-native-ui-kitten": "^4.4.1",
     "react-native-vector-icons": "^9.1.0",
     "react-native-web": "0.17.1",
     "react-navigation": "^4.4.4",
