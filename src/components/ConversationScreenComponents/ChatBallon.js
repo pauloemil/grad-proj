@@ -46,8 +46,8 @@ const ChatBallon = ({ messageText, meSend, date }) => {
           style={[
             styles.ballon,
             meSend
-              ? { borderBottomLeftRadius: 50 }
-              : { borderBottomRightRadius: 50 },
+              ? { borderBottomRightRadius: 0 }
+              : { borderBottomLeftRadius: 0 },
             { backgroundColor: meSend ? "#f8f7fe" : "#f9f9f9" },
           ]}
         >
@@ -56,7 +56,8 @@ const ChatBallon = ({ messageText, meSend, date }) => {
             style={[
               styles.dateText,
               { alignSelf: meSend ? "flex-end" : "flex-start" },
-              meSend ? { right: 5 } : { left: 5 },
+              meSend ? { right: 10 } : { left: 10 },
+              { bottom: 8 },
             ]}
           >
             {date}
