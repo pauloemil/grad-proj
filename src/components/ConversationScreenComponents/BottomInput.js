@@ -221,11 +221,11 @@ const BottomInput = ({ messagesList, setMessagesList }) => {
 };
 const styles = StyleSheet.create({
   container: {
-    // height: 50,
-    flexDirection: "column",
+    height: 50,
+    flexDirection: "row",
     width: "100%",
     position: "absolute",
-    bottom: 100,
+    bottom: 5,
   },
 
   textInput: {
