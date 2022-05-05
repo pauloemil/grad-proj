@@ -6,6 +6,7 @@ import Header from "../components/CreateConversationScreenComponents/Header";
 import FloatingAcceptingButton from "../components/CreateConversationScreenComponents/FloatingAcceptingButton";
 import { useSelector, useDispatch } from "react-redux";
 import { setCategory, setName } from "../redux/conversationsActions";
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 
 const CreateConversationScreen = ({ navigation }) => {
   const categories = ["Food", "Sports", "Arts & Entertainments", "Traviling"];
@@ -20,44 +21,46 @@ const CreateConversationScreen = ({ navigation }) => {
   return (
     <View style={styles.container}>
       <Header navigation={navigation} />
-      <View style={styles.wrapper}>
-        <TextInput
-          style={styles.textinp}
-          value={name}
-          maxLength={25}
-          placeholder="Conversation Title"
-          onChangeText={(text) => {
-            dispatch(setName(text));
-          }}
-        />
+      <KeyboardAwareScrollView>
+        <View style={styles.wrapper}>
+          <TextInput
+            style={styles.textinp}
+            value={name}
+            maxLength={25}
+            placeholder="Conversation Title"
+            onChangeText={(text) => {
+              dispatch(setName(text));
+            }}
+          />
 
-        <SelectDropdown
-          data={categories}
-          defaultButtonText="Choose the Category"
-          buttonStyle={styles.dropdown4BtnStyle}
-          buttonTextStyle={styles.dropdown4BtnTxtStyle}
-          dropdownStyle={styles.dropdown4DropdownStyle}
-          rowStyle={styles.dropdown4RowStyle}
-          rowTextStyle={styles.dropdown4RowTxtStyle}
-          onSelect={(selectedItem) => handleChange(selectedItem)}
-          renderDropdownIcon={(isOpened) => {
-            return (
-              <Icon
-                name={isOpened ? "chevron-up" : "chevron-down"}
-                color={"#444"}
-                size={18}
-              />
-            );
-          }}
-          buttonTextAfterSelection={(selectedItem, index) => {
-            return selectedItem;
-          }}
-          rowTextForSelection={(item, index) => {
-            return item;
-          }}
-          dropdownIconPosition="right"
-        />
-      </View>
+          <SelectDropdown
+            data={categories}
+            defaultButtonText="Choose the Category"
+            buttonStyle={styles.dropdown4BtnStyle}
+            buttonTextStyle={styles.dropdown4BtnTxtStyle}
+            dropdownStyle={styles.dropdown4DropdownStyle}
+            rowStyle={styles.dropdown4RowStyle}
+            rowTextStyle={styles.dropdown4RowTxtStyle}
+            onSelect={(selectedItem) => handleChange(selectedItem)}
+            renderDropdownIcon={(isOpened) => {
+              return (
+                <Icon
+                  name={isOpened ? "chevron-up" : "chevron-down"}
+                  color={"#444"}
+                  size={18}
+                />
+              );
+            }}
+            buttonTextAfterSelection={(selectedItem, index) => {
+              return selectedItem;
+            }}
+            rowTextForSelection={(item, index) => {
+              return item;
+            }}
+            dropdownIconPosition="right"
+          />
+        </View>
+      </KeyboardAwareScrollView>
       <FloatingAcceptingButton
         navigation={navigation}
         // title={conversationName}

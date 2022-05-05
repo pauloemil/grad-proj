@@ -59,7 +59,7 @@ const conversationsInitialState = {
   ],
   category: "",
   name: "",
-  gender: "female",
+  gender: "male",
 };
 
 export function conversationsReducer(
