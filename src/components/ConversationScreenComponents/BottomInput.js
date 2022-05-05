@@ -1,25 +1,34 @@
-import React, { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   View,
   StyleSheet,
   TouchableOpacity,
+  Pressable,
   TextInput,
   Text,
   Button,
 } from "react-native";
 import Icon from "react-native-vector-icons/Ionicons";
 import { Audio } from "expo-av";
-
+import axios from "react-native-axios";
+import ky from "ky";
 import { useSelector, useDispatch } from "react-redux";
 import { addMessage } from "../../redux/conversationsActions";
 
 const BottomInput = ({ messagesList, setMessagesList }) => {
   const [inputText, setInputText] = useState("");
+  const [pageX, setPageX] = useState(0);
+  const [selectionValue, setSelectionValue] = useState({
+    start: 0,
+    end: 0,
+  });
+
   const { conversations } = useSelector((state) => state.conversationsReducer);
 
   const [recording, setRecording] = useState();
   const [recordings, setRecordings] = useState([]);
   const [message, setMessage] = useState("");
+  const [suggestion, setSuggestion] = useState("-suggestion-");
 
   async function startRecording() {
     console.log("started Recording");
@@ -43,13 +52,14 @@ const BottomInput = ({ messagesList, setMessagesList }) => {
     } catch (err) {
       console.error("Failed to start recording", err);
     }
-    console.log("finish Recording");
   }
 
   async function stopRecording() {
-    console.log("stopping!1");
+    console.log("stopping!");
     setRecording(undefined);
     await recording.stopAndUnloadAsync();
+    const uri = recording.getURI();
+    console.log(uri);
 
     let updatedRecordings = [...recordings];
     const { sound, status } = await recording.createNewLoadedSoundAsync();
@@ -58,11 +68,42 @@ const BottomInput = ({ messagesList, setMessagesList }) => {
       duration: getDurationFormatted(status.durationMillis),
       file: recording.getURI(),
     });
-
+    const filetype = uri.split(".").pop();
+    const filename = uri.split("/").pop();
+    const fd = new FormData();
+    fd.append("audio-record", {
+      uri,
+      type: `audio/${filetype}`,
+      name: filename,
+    });
+    sendFiles(fd);
     setRecordings(updatedRecordings);
-    console.log("stopping!2");
   }
-
+  const sendFiles = (formData) => {
+    ky.post("http://192.168.1.11:3000/conversation/upload", {
+      body: formData,
+    });
+    // axios
+    //   .get("http://192.168.1.11:3000/conversation")
+    //   .then((resp) => {
+    //     console.log("resp: ", resp.data);
+    //   })
+    //   .catch((resp) => {
+    //     console.log("err: ", resp);
+    //   });
+    // axios({
+    //   method: "post",
+    //   url: "http://192.168.1.11:3000/conversation/upload",
+    //   data: formData,
+    //   headers: { "Content-Type": "multipart/form-data" },
+    // })
+    //   .then((resp) => {
+    //     console.log("resp: ", resp.data);
+    //   })
+    //   .catch((resp) => {
+    //     console.log("err: ", resp);
+    //   });
+  };
   function getDurationFormatted(millis) {
     const minutes = millis / 1000 / 60;
     const minutesDisplay = Math.floor(minutes);
@@ -88,29 +129,69 @@ const BottomInput = ({ messagesList, setMessagesList }) => {
     });
   }
 
+  // useEffect(() => {
+  //   setNewInputText(suggestion);
+  //   setSuggestion("");
+  //   setSuggestion(newinputText);
+
+  // }, [inputText]);
+
   return (
     <View style={styles.container}>
       {/* {console.log(recordings)} */}
       {getRecordingLines()}
       <TextInput
-        value={inputText}
-        onChangeText={(newText) => setInputText(newText)}
-        multiline
+        onTouchStart={(e) => setPageX(e.nativeEvent.pageX)}
+        onTouchEnd={(e) => {
+          if (e.nativeEvent.pageX > 60 + pageX) {
+            console.log(pageX, e.nativeEvent.pageX);
+            setInputText(inputText + suggestion);
+            setSuggestion("");
+          }
+        }}
+        // onKeyPress={({ nativeEvent }) => {
+        //   if (nativeEvent.key === "Backspace") {
+        //     setInputText(
+        //       inputText.replace(suggestion, "").slice(0, inputText.length - 1)
+        //     );
+        //   } else {
+        //     console.log("char: ", nativeEvent.key);
+        //     setInputText(inputText.replace(suggestion, "") + nativeEvent.key);
+        //     console.log("inputText: ", inputText);
+        //   }
+        // }}
+        onChangeText={(newText) => {
+          console.log("newText: ", newText);
+          const editedText = newText.replace(suggestion, "");
+          console.log("editedText: ", editedText);
+          setInputText(editedText);
+
+          // console.log("inputText:", inputText, "newText: ", newText);
+        }}
+        selection={{ start: inputText.length }}
+        multiline={true}
         style={styles.textInput}
-      />
+      >
+        {/* <Text> */}
+        <Text>{inputText}</Text>
+
+        <Text style={{ color: "gray" }}>{suggestion}</Text>
+        {/* </Text> */}
+      </TextInput>
 
       {inputText.trim() !== "" ? (
         <TouchableOpacity
           style={styles.sendButton}
           onPress={() => {
             if (inputText.trim() !== "")
-              setMessagesList([
-                ...messagesList,
-                {
-                  messageText: inputText.trim(),
-                  meSend: true,
-                },
-              ]);
+              console.log(inputText, " is typed here");
+            // setMessagesList([
+            //   ...messagesList,
+            //   {
+            //     messageText: inputText.trim(),
+            //     meSend: true,
+            //   },
+            // ]);
             setInputText("");
           }}
         >
@@ -140,11 +221,11 @@ const BottomInput = ({ messagesList, setMessagesList }) => {
 };
 const styles = StyleSheet.create({
   container: {
-    height: 50,
-    flexDirection: "row",
+    // height: 50,
+    flexDirection: "column",
     width: "100%",
     position: "absolute",
-    bottom: 5,
+    bottom: 100,
   },
 
   textInput: {
