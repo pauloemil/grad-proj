@@ -7,7 +7,7 @@ import Header from "../components/HomeScreenComponents/Header";
 const HomeScreen = ({ navigation }) => {
   return (
     <View style={styles.container}>
-      <Header />
+      <Header navigation={navigation} />
       <ConversationList navigation={navigation} style={styles.list} />
       <FloatingStartingButton
         navigation={navigation}
