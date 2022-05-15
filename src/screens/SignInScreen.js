@@ -5,14 +5,36 @@ import {
   StyleSheet,
   TextInput,
   TouchableOpacity,
+  ToastAndroid,
 } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
-
+import axios from "../configs/axiosHelper";
 import Footer from "../components/SignInScreenComponents/Footer";
 
 const SignInScreen = ({ navigation }) => {
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
+  const [usernameEmail, setUsernameEmail] = useState("buglow_34");
+  const [password, setPassword] = useState("password");
+
+  const sendLogin = () => {
+    console.log("\n\n\n\n");
+    axios({
+      method: "post",
+      url: "/login",
+      data: {
+        username: usernameEmail,
+        password: password,
+      },
+    })
+      .then((resp) => {
+        ToastAndroid.showWithGravity(
+          "Signed Successfully!",
+          ToastAndroid.SHORT,
+          ToastAndroid.CENTER
+        );
+        console.log(resp.data);
+      })
+      .catch((err) => console.log("ERR", err));
+  };
   return (
     <KeyboardAwareScrollView>
       <View style={styles.container}>
@@ -21,9 +43,9 @@ const SignInScreen = ({ navigation }) => {
           <Text style={styles.miniText}>Wellcome back you've been missed!</Text>
           <TextInput
             style={styles.inputText}
-            value={username}
-            onChangeText={setUsername}
-            placeholder="Username"
+            value={usernameEmail}
+            onChangeText={setUsernameEmail}
+            placeholder="Username / Email"
           />
           <TextInput
             style={styles.inputText}
@@ -40,7 +62,10 @@ const SignInScreen = ({ navigation }) => {
           >
             Recovery Password
           </Text>
-          <TouchableOpacity style={styles.signInButton}>
+          <TouchableOpacity
+            onPress={() => sendLogin()}
+            style={styles.signInButton}
+          >
             <Text style={styles.signText}>Sign In</Text>
           </TouchableOpacity>
           <Footer isSignIn={true} navigation={navigation} />
