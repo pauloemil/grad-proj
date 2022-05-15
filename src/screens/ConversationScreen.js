@@ -41,7 +41,7 @@ const ConversationScreen = ({ navigation }) => {
         </View>
       </View>
       <View>
-        <BottomInput />
+        <BottomInput chatId={selectedConversationId} />
       </View>
     </View>
   );

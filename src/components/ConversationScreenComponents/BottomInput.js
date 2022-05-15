@@ -7,31 +7,35 @@ import {
   TextInput,
   Text,
   Button,
+  ToastAndroid,
 } from "react-native";
 import Icon from "react-native-vector-icons/Ionicons";
 import { Audio } from "expo-av";
-import axios from "react-native-axios";
-import ky from "ky";
+
 import { useSelector, useDispatch } from "react-redux";
 import { addMessage } from "../../redux/conversationsActions";
+import axios from "../../configs/axiosHelper";
 
-const BottomInput = ({ messagesList, setMessagesList }) => {
+const BottomInput = ({ chatId }) => {
   const [inputText, setInputText] = useState("");
   const [pageX, setPageX] = useState(0);
   const [selectionValue, setSelectionValue] = useState({
     start: 0,
     end: 0,
   });
-
   const { conversations } = useSelector((state) => state.conversationsReducer);
 
   const [recording, setRecording] = useState();
   const [recordings, setRecordings] = useState([]);
   const [message, setMessage] = useState("");
   const [suggestion, setSuggestion] = useState("-suggestion-");
-
+  const dispatch = useDispatch();
   async function startRecording() {
-    console.log("started Recording");
+    ToastAndroid.showWithGravity(
+      "Recording!",
+      ToastAndroid.SHORT,
+      ToastAndroid.CENTER
+    );
     try {
       const permission = await Audio.requestPermissionsAsync();
 
@@ -53,9 +57,13 @@ const BottomInput = ({ messagesList, setMessagesList }) => {
       console.error("Failed to start recording", err);
     }
   }
-
   async function stopRecording() {
     console.log("stopping!");
+    ToastAndroid.showWithGravity(
+      "Done!",
+      ToastAndroid.SHORT,
+      ToastAndroid.CENTER
+    );
     setRecording(undefined);
     await recording.stopAndUnloadAsync();
     const uri = recording.getURI();
@@ -71,7 +79,7 @@ const BottomInput = ({ messagesList, setMessagesList }) => {
     const filetype = uri.split(".").pop();
     const filename = uri.split("/").pop();
     const fd = new FormData();
-    fd.append("audio-record", {
+    fd.append("voice", {
       uri,
       type: `audio/${filetype}`,
       name: filename,
@@ -79,30 +87,17 @@ const BottomInput = ({ messagesList, setMessagesList }) => {
     sendFiles(fd);
     setRecordings(updatedRecordings);
   }
-  const sendFiles = (formData) => {
-    ky.post("http://192.168.1.11:3000/conversation/upload", {
-      body: formData,
-    });
-    // axios
-    //   .get("http://192.168.1.11:3000/conversation")
-    //   .then((resp) => {
-    //     console.log("resp: ", resp.data);
-    //   })
-    //   .catch((resp) => {
-    //     console.log("err: ", resp);
-    //   });
-    // axios({
-    //   method: "post",
-    //   url: "http://192.168.1.11:3000/conversation/upload",
-    //   data: formData,
-    //   headers: { "Content-Type": "multipart/form-data" },
-    // })
-    //   .then((resp) => {
-    //     console.log("resp: ", resp.data);
-    //   })
-    //   .catch((resp) => {
-    //     console.log("err: ", resp);
-    //   });
+  const sendFiles = async (formData) => {
+    axios({
+      method: "post",
+      url: "/paulo/upload-voice",
+      data: formData,
+      headers: { "Content-Type": "multipart/form-data" },
+    })
+      .then((resp) => {
+        dispatch(addMessage(chatId, resp.data.text, false));
+      })
+      .catch((err) => console.log("ERR", err));
   };
   function getDurationFormatted(millis) {
     const minutes = millis / 1000 / 60;
@@ -111,7 +106,6 @@ const BottomInput = ({ messagesList, setMessagesList }) => {
     const secondsDisplay = seconds < 10 ? `0${seconds}` : seconds;
     return `${minutesDisplay}:${secondsDisplay}`;
   }
-
   function getRecordingLines() {
     return recordings.map((recordingLine, index) => {
       return (
@@ -129,17 +123,8 @@ const BottomInput = ({ messagesList, setMessagesList }) => {
     });
   }
 
-  // useEffect(() => {
-  //   setNewInputText(suggestion);
-  //   setSuggestion("");
-  //   setSuggestion(newinputText);
-
-  // }, [inputText]);
-
   return (
     <View style={styles.container}>
-      {/* {console.log(recordings)} */}
-      {getRecordingLines()}
       <TextInput
         onTouchStart={(e) => setPageX(e.nativeEvent.pageX)}
         onTouchEnd={(e) => {
@@ -172,26 +157,20 @@ const BottomInput = ({ messagesList, setMessagesList }) => {
         multiline={true}
         style={styles.textInput}
       >
-        {/* <Text> */}
-        <Text>{inputText}</Text>
-
-        <Text style={{ color: "gray" }}>{suggestion}</Text>
-        {/* </Text> */}
+        <Text>
+          <Text>{inputText}</Text>
+          <Text style={{ color: "gray" }}>{suggestion}</Text>
+        </Text>
       </TextInput>
 
       {inputText.trim() !== "" ? (
         <TouchableOpacity
           style={styles.sendButton}
           onPress={() => {
-            if (inputText.trim() !== "")
+            if (inputText.trim() !== "") {
               console.log(inputText, " is typed here");
-            // setMessagesList([
-            //   ...messagesList,
-            //   {
-            //     messageText: inputText.trim(),
-            //     meSend: true,
-            //   },
-            // ]);
+              dispatch(addMessage(chatId, inputText, true));
+            }
             setInputText("");
           }}
         >
