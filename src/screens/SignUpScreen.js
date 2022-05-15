@@ -6,15 +6,70 @@ import {
   TextInput,
   TouchableOpacity,
   SafeAreaView,
+  ToastAndroid,
 } from "react-native";
+import Icon from "react-native-vector-icons/Ionicons";
+
+import SelectDropdown from "react-native-select-dropdown";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import Footer from "../components/SignInScreenComponents/Footer";
+import axios from "../configs/axiosHelper";
 
 const SignUpScreen = ({ navigation }) => {
-  const [username, setUsername] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmationPassword, setConfirmationPassword] = useState("");
+  const [username, setUsername] = useState("buglow_324");
+  const [email, setEmail] = useState("prog.pau2lo@hotmail.com");
+  const [password, setPassword] = useState("password");
+  const [confirmationPassword, setConfirmationPassword] = useState("password");
+  const [firstName, setFirstName] = useState("paulo");
+  const [secondName, setSecondName] = useState("emil");
+  const [mobileNumber, setMobileNumber] = useState("+201454148331");
+  const [address, setAddress] = useState(
+    "tur sinai, st. new Kelany, building 5, flat 4"
+  );
+  const [gender, setGender] = useState(null);
+
+  const genders = ["Male", "Female"];
+
+  const handleChange = (gender) => {
+    // dispatch(setCategory(gender));
+    console.log(gender);
+    setGender(gender);
+  };
+  const sendRegister = () => {
+    if (password !== confirmationPassword) {
+      ToastAndroid.showWithGravity(
+        "Passwords don't match!",
+        ToastAndroid.SHORT,
+        ToastAndroid.CENTER
+      );
+      return;
+    }
+    console.log("\n\n\n\n");
+    axios({
+      method: "post",
+      url: "/register",
+      data: {
+        username: username,
+        first_name: firstName,
+        last_name: secondName,
+        email: email,
+        telephone_no: mobileNumber,
+        password: password,
+        confirm_password: confirmationPassword,
+        gender: gender,
+      },
+    })
+      .then((resp) => {
+        ToastAndroid.showWithGravity(
+          "Done!",
+          ToastAndroid.SHORT,
+          ToastAndroid.CENTER
+        );
+
+        navigation.navigate("SignIn");
+      })
+      .catch((err) => console.log("ERR", err.request._response));
+  };
   return (
     <KeyboardAwareScrollView>
       <View style={styles.container}>
@@ -46,8 +101,68 @@ const SignUpScreen = ({ navigation }) => {
             placeholder="Confirmation Password"
             secureTextEntry
           />
+          <Text style={styles.miniText}>More To Go!</Text>
+          <TextInput
+            style={styles.inputText}
+            value={firstName}
+            onChangeText={setFirstName}
+            placeholder="First Name"
+          />
+          <TextInput
+            style={styles.inputText}
+            value={secondName}
+            onChangeText={setSecondName}
+            placeholder="Second Name"
+          />
+          <TextInput
+            style={styles.inputText}
+            value={mobileNumber}
+            onChangeText={setMobileNumber}
+            placeholder="Mobile Number"
+            keyboardType="number-pad"
+          />
 
-          <TouchableOpacity style={styles.signInButton}>
+          <TextInput
+            style={styles.inputText}
+            value={address}
+            onChangeText={setAddress}
+            placeholder="Address"
+          />
+          <View style={{ width: "100%" }}>
+            <SelectDropdown
+              data={genders}
+              defaultButtonText="Gender"
+              buttonStyle={styles.dropdown4BtnStyle}
+              buttonTextStyle={styles.dropdown4BtnTxtStyle}
+              dropdownStyle={styles.dropdown4DropdownStyle}
+              rowStyle={styles.dropdown4RowStyle}
+              rowTextStyle={styles.dropdown4RowTxtStyle}
+              onSelect={(selectedItem) => handleChange(selectedItem)}
+              renderDropdownIcon={(isOpened) => {
+                return (
+                  <Icon
+                    name={isOpened ? "chevron-up" : "chevron-down"}
+                    color={"#444"}
+                    size={18}
+                  />
+                );
+              }}
+              buttonTextAfterSelection={(selectedItem, index) => {
+                return selectedItem;
+              }}
+              rowTextForSelection={(item, index) => {
+                return item;
+              }}
+              dropdownIconPosition="right"
+            />
+          </View>
+
+          <TouchableOpacity
+            onPress={() => {
+              sendRegister();
+            }}
+            style={styles.signInButton}
+          >
             <Text style={styles.signText}>Sign Up</Text>
           </TouchableOpacity>
           <Footer navigation={navigation} />
@@ -84,9 +199,9 @@ const styles = StyleSheet.create({
   },
   miniText: {
     textAlign: "center",
-    fontSize: 28,
+    fontSize: 24,
     maxWidth: "80%",
-    marginBottom: 35,
+    marginBottom: 5,
     marginTop: 10,
   },
   recoveryText: {
@@ -104,11 +219,26 @@ const styles = StyleSheet.create({
     borderRadius: 15,
     justifyContent: "center",
     alignItems: "center",
-    marginTop: 30,
+    marginTop: 10,
   },
   signText: {
     color: "white",
     fontSize: 18,
   },
+  dropdown4BtnStyle: {
+    width: "50%",
+    height: 50,
+    backgroundColor: "#FFF",
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: "#444",
+  },
+  dropdown4BtnTxtStyle: { color: "#444", textAlign: "left" },
+  dropdown4DropdownStyle: { backgroundColor: "#EFEFEF" },
+  dropdown4RowStyle: {
+    backgroundColor: "#EFEFEF",
+    borderBottomColor: "#C5C5C5",
+  },
+  dropdown4RowTxtStyle: { color: "#444", textAlign: "left" },
 });
 export default SignUpScreen;
