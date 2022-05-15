@@ -7,7 +7,7 @@ import {
   DELETE_CONVERSATION,
   SET_SELECTED_CONVERSATION_ID,
 } from "./conversationsActions";
-
+import uuid from "react-native-uuid";
 const conversationsInitialState = {
   conversations: [
     {
@@ -59,6 +59,14 @@ const conversationsInitialState = {
   ],
   category: "",
   name: "",
+};
+
+const userInitialState = {
+  access_token: "",
+  refresh_token: "",
+  username: "",
+  firstName: "",
+  secondName: "",
   gender: "male",
 };
 
@@ -80,6 +88,35 @@ export function conversationsReducer(
       };
     case SET_SELECTED_CONVERSATION_ID:
       return { ...state, selectedConversationId: action.payload };
+    case ADD_NEW_MESSAGE:
+      console.log("@@@@@@@@@@@@@@@@@@@@@@@", action.payload);
+      return {
+        ...state,
+        conversations: state.conversations.map((conv) =>
+          conv.id === action.payload.id
+            ? {
+                ...conv,
+                conversation: [
+                  ...conv.conversation,
+                  {
+                    id: uuid.v4(),
+                    messageText: action.payload.messageText,
+                    meSend: action.payload.meSend,
+                  },
+                ],
+              }
+            : conv
+        ),
+      };
+    default:
+      return state;
+  }
+}
+
+export function userReducer(state = userInitialState, action) {
+  switch (action.type) {
+    case SET_CONVERSATIONS:
+      return { ...state, conversations: action.payload };
     default:
       return state;
   }
