@@ -1,7 +1,13 @@
 import React, { useState } from "react";
-import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  ToastAndroid,
+} from "react-native";
 import Icon from "react-native-vector-icons/Ionicons";
-
+import uuid from "react-native-uuid";
 import { useSelector, useDispatch } from "react-redux";
 import {
   setSelectedConversations,
@@ -11,16 +17,34 @@ const FloatingAcceptingButton = ({ navigation }) => {
   // send el conversation to the back end and get her id, then add it to the store
   const { category, name } = useSelector((state) => state.conversationsReducer);
   const dispatch = useDispatch();
-  const handlePress = (id) => {
+  const handlePress = () => {
+    const id = uuid.v4();
     dispatch(addNewConversation(id, name, category));
     dispatch(setSelectedConversations(id));
+    ToastAndroid.showWithGravity(
+      "Done!",
+      ToastAndroid.SHORT,
+      ToastAndroid.CENTER
+    );
   };
   return (
     <TouchableOpacity
       style={styles.touchableContainer}
       onPress={() => {
-        if (category.trim() !== "" && name.trim() !== "") {
-          handlePress(44);
+        if (name.trim() === "") {
+          ToastAndroid.showWithGravity(
+            "Please enter the title!",
+            ToastAndroid.SHORT,
+            ToastAndroid.CENTER
+          );
+        } else if (category.trim() === "") {
+          ToastAndroid.showWithGravity(
+            "Please select a category!",
+            ToastAndroid.SHORT,
+            ToastAndroid.CENTER
+          );
+        } else {
+          handlePress();
           navigation.pop(1);
           navigation.navigate("Conversation");
         }
