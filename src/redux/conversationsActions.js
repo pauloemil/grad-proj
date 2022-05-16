@@ -46,9 +46,9 @@ export const setName = (name) => (dispatch) => {
   });
 };
 
-export const addMessage = (messageText, meSend) => (dispatch) => {
+export const addMessage = (id, messageText, meSend) => (dispatch) => {
   dispatch({
     type: ADD_NEW_MESSAGE,
-    payload: { messageText, meSend },
+    payload: { id, messageText, meSend },
   });
 };
