@@ -11,30 +11,12 @@ import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view
 import axios from "../configs/axiosHelper";
 import Footer from "../components/SignInScreenComponents/Footer";
 
-const SignInScreen = ({ navigation }) => {
-  const [usernameEmail, setUsernameEmail] = useState("buglow_34");
+import { sendLogin } from "../configs/axiosHelper";
+const SignInScreen = ({ navigation, route }) => {
+  const [usernameEmail, setUsernameEmail] = useState("buglowEmil");
   const [password, setPassword] = useState("password");
+  console.log("login", route.params);
 
-  const sendLogin = () => {
-    console.log("\n\n\n\n");
-    axios({
-      method: "post",
-      url: "/login",
-      data: {
-        username: usernameEmail,
-        password: password,
-      },
-    })
-      .then((resp) => {
-        ToastAndroid.showWithGravity(
-          "Signed Successfully!",
-          ToastAndroid.SHORT,
-          ToastAndroid.CENTER
-        );
-        console.log(resp.data);
-      })
-      .catch((err) => console.log("ERR", err));
-  };
   return (
     <KeyboardAwareScrollView>
       <View style={styles.container}>
@@ -63,7 +45,9 @@ const SignInScreen = ({ navigation }) => {
             Recovery Password
           </Text>
           <TouchableOpacity
-            onPress={() => sendLogin()}
+            onPress={() =>
+              sendLogin(usernameEmail, password, route.params.setIsLogged)
+            }
             style={styles.signInButton}
           >
             <Text style={styles.signText}>Sign In</Text>
