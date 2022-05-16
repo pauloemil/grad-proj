@@ -28,11 +28,11 @@ const SignUpScreen = ({ navigation }) => {
   );
   const [gender, setGender] = useState(null);
 
-  const genders = ["Male", "Female"];
+  const genders = ["male", "female"];
 
   const handleChange = (gender) => {
     // dispatch(setCategory(gender));
-    console.log(gender);
+    // console.log(gender);
     setGender(gender);
   };
   const sendRegister = () => {
