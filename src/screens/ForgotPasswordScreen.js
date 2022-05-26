@@ -7,9 +7,20 @@ import {
   TouchableOpacity,
 } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
-
+import { useDispatch } from "react-redux";
+import { sendForgetPassword } from "../configs/axiosHelper";
+import { setEmailAction } from "../redux/actions/resetActions";
 const ForgotPasswordScreen = ({ navigation }) => {
-  const [email, setEmail] = useState("");
+  const [email, setEmail] = useState("prog.paulo@hotmail.com");
+  const dispatch = useDispatch();
+  const navigationHandle = () => {
+    navigation.pop();
+    navigation.navigate("OTPScreen");
+  };
+  const handlePress = () => {
+    sendForgetPasssword(email, navigationHandle);
+    dispatch(setEmailAction(email));
+  };
   return (
     <KeyboardAwareScrollView>
       <View style={styles.container}>
@@ -28,7 +39,7 @@ const ForgotPasswordScreen = ({ navigation }) => {
             placeholder="Email"
           />
           <TouchableOpacity
-            onPress={() => navigation.navigate("OTPScreen")}
+            onPress={() => handlePress()}
             style={styles.signInButton}
           >
             <Text style={styles.signText}>Submit</Text>

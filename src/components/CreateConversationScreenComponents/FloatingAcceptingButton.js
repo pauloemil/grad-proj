@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import {
   View,
   Text,
@@ -6,26 +6,35 @@ import {
   TouchableOpacity,
   ToastAndroid,
 } from "react-native";
-import Icon from "react-native-vector-icons/Ionicons";
-import uuid from "react-native-uuid";
 import { useSelector, useDispatch } from "react-redux";
 import {
   setSelectedConversations,
   addNewConversation,
-} from "../../redux/conversationsActions";
+  setName,
+} from "../../redux/actions/conversationsActions";
+import { postNewConversation } from "../../configs/axiosHelper";
+import { primaryColor } from "../GlobalStyles";
+import Icon from "react-native-vector-icons/Ionicons";
+import uuid from "react-native-uuid";
 const FloatingAcceptingButton = ({ navigation }) => {
-  // send el conversation to the back end and get her id, then add it to the store
-  const { category, name } = useSelector((state) => state.conversationsReducer);
+  const { name } = useSelector((state) => state.conversationsReducer);
   const dispatch = useDispatch();
   const handlePress = () => {
+    postNewConversation(name, "food");
+    onConversationDone();
+  };
+  const onConversationDone = () => {
     const id = uuid.v4();
-    dispatch(addNewConversation(id, name, category));
+    dispatch(addNewConversation(id, name, "food"));
     dispatch(setSelectedConversations(id));
+    dispatch(setName(""));
     ToastAndroid.showWithGravity(
       "Done!",
       ToastAndroid.SHORT,
       ToastAndroid.CENTER
     );
+    navigation.pop(1);
+    navigation.navigate("Conversation");
   };
   return (
     <TouchableOpacity
@@ -37,21 +46,12 @@ const FloatingAcceptingButton = ({ navigation }) => {
             ToastAndroid.SHORT,
             ToastAndroid.CENTER
           );
-        } else if (category.trim() === "") {
-          ToastAndroid.showWithGravity(
-            "Please select a category!",
-            ToastAndroid.SHORT,
-            ToastAndroid.CENTER
-          );
         } else {
           handlePress();
-          navigation.pop(1);
-          navigation.navigate("Conversation");
         }
       }}
     >
       <View style={[styles.container, styles.shadow]}>
-        {/* <Text style={styles.addButton}>a</Text> */}
         <Icon name="checkmark-sharp" size={30} color="white" />
       </View>
     </TouchableOpacity>
@@ -72,13 +72,13 @@ const styles = StyleSheet.create({
     width: 70,
     height: 70,
     borderRadius: 100,
-    backgroundColor: "purple",
+    backgroundColor: primaryColor,
   },
   shadow: {
     shadowOffset: { width: 5, height: 5 },
     shadowColor: "black",
     shadowOpacity: 0.2,
-    elevation: 2,
+    elevation: 6,
   },
 });
 export default FloatingAcceptingButton;

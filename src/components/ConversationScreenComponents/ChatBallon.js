@@ -2,9 +2,11 @@ import React, { useState } from "react";
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import * as Speech from "expo-speech";
 import { useSelector } from "react-redux";
+import { meSendColor, notMeSendColor } from "../GlobalStyles";
 
 const ChatBallon = ({ messageText, meSend, date }) => {
-  const { gender } = useSelector((state) => state.conversationsReducer);
+  let user = useSelector((state) => state.userReducer);
+  user = user.state;
   const [isSpeaking, setIsSpeaking] = useState(false);
 
   const listAllVoiceOptions = async () => {
@@ -14,7 +16,8 @@ const ChatBallon = ({ messageText, meSend, date }) => {
 
   const speak = () => {
     let options = {
-      voice: gender === "male" ? "ar-xa-x-ard-local" : "ar-xa-x-arc-network",
+      voice:
+        user.gender === "male" ? "ar-xa-x-ard-local" : "ar-xa-x-arc-network",
     };
     Speech.speak(messageText, options);
   };
@@ -48,7 +51,7 @@ const ChatBallon = ({ messageText, meSend, date }) => {
             meSend
               ? { borderBottomRightRadius: 0 }
               : { borderBottomLeftRadius: 0 },
-            { backgroundColor: meSend ? "#f8f7fe" : "#f9f9f9" },
+            { backgroundColor: meSend ? meSendColor : notMeSendColor },
           ]}
         >
           <Text style={styles.messageText}>{messageText}</Text>
@@ -70,19 +73,18 @@ const ChatBallon = ({ messageText, meSend, date }) => {
 const styles = StyleSheet.create({
   container: {
     marginTop: 10,
-
     maxWidth: "70%",
-    minWidth: "20%",
+    minWidth: "30%",
     marginHorizontal: 10,
     flex: 1,
   },
   ballon: {
     padding: 20,
-    borderRadius: 50,
+    borderRadius: 20,
   },
   messageText: {
     color: "black",
-    marginBottom: 3,
+    marginBottom: 5,
   },
   dateText: {
     position: "absolute",

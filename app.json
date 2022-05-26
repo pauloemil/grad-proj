@@ -16,9 +16,8 @@
         }
       ]
     ],
-
-    "name": "grad-proj",
-    "slug": "grad-proj",
+    "name": "Hear Me",
+    "slug": "hear-me",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -30,7 +29,9 @@
     "updates": {
       "fallbackToCacheTimeout": 0
     },
-    "assetBundlePatterns": ["**/*"],
+    "assetBundlePatterns": [
+      "**/*"
+    ],
     "ios": {
       "supportsTablet": true
     },
@@ -42,6 +43,8 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "description": "",
+    "githubUrl": "https://github.com/pauloemil/grad-proj"
   }
 }

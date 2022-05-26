@@ -7,10 +7,22 @@ import {
   TouchableOpacity,
 } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
-
+import { sendOTP } from "../configs/axiosHelper";
+import { useSelector, useDispatch } from "react-redux";
+import { setOTPAction } from "../redux/actions/resetActions";
 const OTPScreen = ({ navigation }) => {
   const [OTP, setOTP] = useState("");
-  const ForgottenEmail = "paulo.emil.bolous@hotmail.com";
+  const dispatch = useDispatch();
+  const { email } = useSelector((state) => state.resetReducer);
+  const ForgottenEmail = email;
+  const navigationHandle = () => {
+    navigation.pop();
+    navigation.navigate("ResetPassword");
+  };
+  const handlePress = () => {
+    sendOTP(OTP, email, navigationHandle);
+    dispatch(setOTPAction(OTP));
+  };
   return (
     <KeyboardAwareScrollView>
       <View style={styles.container}>
@@ -29,7 +41,7 @@ const OTPScreen = ({ navigation }) => {
             placeholder="OTP"
           />
           <TouchableOpacity
-            onPress={() => navigation.navigate("ResetPassword")}
+            onPress={() => handlePress()}
             style={styles.signInButton}
           >
             <Text style={styles.signText}>Submit</Text>
@@ -64,13 +76,11 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   mainText: {
-    // alignItems: "flex-start",
     fontSize: 40,
     fontWeight: "bold",
     marginTop: "30%",
   },
   miniText: {
-    // textAlign: "center",
     color: "gray",
     fontSize: 18,
     maxWidth: "100%",

@@ -1,6 +1,7 @@
 import React from "react";
-import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
+import { View, StyleSheet, TouchableOpacity } from "react-native";
 import Icon from "react-native-vector-icons/AntDesign";
+import { primaryColor } from "../GlobalStyles";
 
 const FloatingStartingButton = ({ navigation }) => {
   return (
@@ -9,7 +10,6 @@ const FloatingStartingButton = ({ navigation }) => {
       onPress={() => navigation.navigate("CreateConversation")}
     >
       <View style={[styles.container, styles.shadow]}>
-        {/* <Text style={styles.addButton}>a</Text> */}
         <Icon name="plus" size={30} color="white" />
       </View>
     </TouchableOpacity>
@@ -30,19 +30,13 @@ const styles = StyleSheet.create({
     width: 70,
     height: 70,
     borderRadius: 100,
-    backgroundColor: "purple",
+    backgroundColor: primaryColor,
   },
-  // addButton: {
-  //   margin: 0,
-  //   fontSize: 35,
-  //   fontWeight: "bold",
-  //   color: "white",
-  // },
   shadow: {
     shadowOffset: { width: 5, height: 5 },
     shadowColor: "black",
     shadowOpacity: 0.2,
-    elevation: 2,
+    elevation: 6,
   },
 });
 export default FloatingStartingButton;

@@ -3,19 +3,9 @@ import { View, Text, StyleSheet, Image, TouchableOpacity } from "react-native";
 import Icon from "react-native-vector-icons/Ionicons";
 
 const Header = ({ navigation, name, category }) => {
-  const [imagePath, setImagePath] = useState(null);
-
-  useEffect(() => {
-    if (category === "Arts & Entertainments")
-      setImagePath(require("../../assets/artsEnter.png"));
-    else if (category === "Food")
-      setImagePath(require("../../assets/foodanddrinks.png"));
-    else if (category === "Sports")
-      setImagePath(require("../../assets/sports.png"));
-    else if (category === "Traviling")
-      setImagePath(require("../../assets/travel.png"));
-  }, [category]);
-
+  const [imagePath, setImagePath] = useState(
+    require("../../assets/foodanddrinks.png")
+  );
   return (
     <View style={styles.container}>
       <TouchableOpacity

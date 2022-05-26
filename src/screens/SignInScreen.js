@@ -5,24 +5,26 @@ import {
   StyleSheet,
   TextInput,
   TouchableOpacity,
-  ToastAndroid,
 } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
-import axios from "../configs/axiosHelper";
+import { sendLogin } from "../configs/axiosHelper";
+import { primaryColor, secondaryColor } from "../components/GlobalStyles";
 import Footer from "../components/SignInScreenComponents/Footer";
 
-import { sendLogin } from "../configs/axiosHelper";
 const SignInScreen = ({ navigation, route }) => {
-  const [usernameEmail, setUsernameEmail] = useState("buglowEmil");
+  const [usernameEmail, setUsernameEmail] = useState("buglow_10");
   const [password, setPassword] = useState("password");
-  console.log("login", route.params);
 
   return (
     <KeyboardAwareScrollView>
       <View style={styles.container}>
+        <View style={styles.outerCircle}></View>
+        <View style={styles.circle}></View>
         <View style={styles.semiContainer}>
           <Text style={styles.mainText}>Hello Again!</Text>
-          <Text style={styles.miniText}>Wellcome back you've been missed!</Text>
+          <Text style={styles.miniText}>
+            Wellcome back you've{"\n"}been missed!
+          </Text>
           <TextInput
             style={styles.inputText}
             value={usernameEmail}
@@ -65,10 +67,25 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     backgroundColor: "#f1eff6",
   },
+  circle: {
+    position: "absolute",
+    backgroundColor: primaryColor,
+    height: "30%",
+    width: "100%",
+    top: 0,
+    borderBottomRightRadius: 200,
+  },
+  outerCircle: {
+    position: "absolute",
+    backgroundColor: secondaryColor,
+    height: "30%",
+    width: "100%",
+    top: 10,
+    borderBottomRightRadius: 200,
+  },
   semiContainer: {
     alignItems: "center",
     width: "90%",
-
     marginTop: "20%",
   },
   inputText: {
@@ -84,30 +101,30 @@ const styles = StyleSheet.create({
   mainText: {
     fontSize: 40,
     fontWeight: "bold",
+    textAlign: "left",
+    width: "100%",
   },
   miniText: {
-    textAlign: "center",
-    fontSize: 28,
-    maxWidth: "80%",
-    marginBottom: 35,
+    textAlign: "left",
+    fontSize: 20,
+    width: "100%",
+    marginBottom: 90,
     marginTop: 10,
   },
   recoveryText: {
     textAlign: "right",
     width: "100%",
-    fontWeight: "700",
-    // backgroundColor: "gray",
     marginTop: 12,
-    color: "#8e919e",
+    color: secondaryColor,
   },
   signInButton: {
-    backgroundColor: "#fc6b68",
-    width: "100%",
-    height: 60,
-    borderRadius: 15,
+    backgroundColor: primaryColor,
+    width: "60%",
+    height: 50,
+    borderRadius: 50,
     justifyContent: "center",
     alignItems: "center",
-    marginTop: 30,
+    marginTop: 15,
   },
   signText: {
     color: "white",

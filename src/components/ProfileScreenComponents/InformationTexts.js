@@ -1,18 +1,24 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { View, Text, StyleSheet } from "react-native";
+import { useSelector } from "react-redux";
 
 const InformationTexts = () => {
-  const [firstName, setfirstName] = useState("Paulo");
-  const [secondName, setSecondName] = useState("Emil");
-  const [userName, setUserName] = useState("Buglower");
   const [conversationCounter, setConversationCounter] = useState(0);
   const [planType, setPlanType] = useState("Regular");
+
+  let user = useSelector((state) => state.userReducer);
+  let { conversations } = useSelector((state) => state.conversationsReducer);
+  user = user.state;
+  useEffect(() => {
+    setConversationCounter(conversations.length);
+  }, []);
+
   return (
     <View style={styles.container}>
       <Text style={styles.names}>
-        {firstName} {secondName}
+        {user.firstName} {user.secondName}
       </Text>
-      <Text>@{userName}</Text>
+      <Text>@{user.username}</Text>
       <View style={styles.simpleInfo}>
         <View style={styles.infoWrapper}>
           <Text style={styles.upperText}>{conversationCounter}</Text>

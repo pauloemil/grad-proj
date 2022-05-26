@@ -5,12 +5,33 @@ import {
   StyleSheet,
   TextInput,
   TouchableOpacity,
+  ToastAndroid,
 } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
+import { useSelector } from "react-redux";
+import { sendResetPassword } from "../configs/axiosHelper";
 
 const SignInScreen = ({ navigation }) => {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const { OTP, email } = useSelector((state) => state.resetReducer);
+  const navigationHandle = () => {
+    navigation.pop();
+    navigation.navigate("SignIn");
+  };
+  const handlePress = () => {
+    if (password === confirmPassword) {
+      sendResetPassword(OTP, email, password, navigationHandle);
+    } else {
+      ToastAndroid.showWithGravity(
+        "Password doesn't match the confirmation password",
+        ToastAndroid.SHORT,
+        ToastAndroid.CENTER
+      );
+      setPassword("");
+      setConfirmPassword("");
+    }
+  };
   return (
     <KeyboardAwareScrollView>
       <View style={styles.container}>
@@ -21,6 +42,7 @@ const SignInScreen = ({ navigation }) => {
             value={password}
             onChangeText={setPassword}
             placeholder="Password"
+            secureTextEntry
           />
           <TextInput
             style={styles.inputText}
@@ -32,7 +54,7 @@ const SignInScreen = ({ navigation }) => {
 
           <TouchableOpacity
             onPress={() => {
-              navigation.navigate("SignIn");
+              handlePress();
             }}
             style={styles.signInButton}
           >

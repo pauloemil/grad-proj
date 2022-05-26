@@ -1,3 +1,4 @@
+export const SET_MESSAGES = "SET_MESSAGES";
 export const SET_CONVERSATIONS = "SET_CONVERSATIONS";
 export const DELETE_CONVERSATION = "DELETE_CONVERSATION";
 export const SET_NEW_CATEGORY = "SET_NEW_CATEGORY";
@@ -10,6 +11,12 @@ export const setConversations = (conversations) => (dispatch) => {
   dispatch({
     type: SET_CONVERSATIONS,
     payload: conversations,
+  });
+};
+export const setMessages = (id, messages) => (dispatch) => {
+  dispatch({
+    type: SET_MESSAGES,
+    payload: { id, messages },
   });
 };
 
@@ -46,9 +53,9 @@ export const setName = (name) => (dispatch) => {
   });
 };
 
-export const addMessage = (id, messageText, meSend) => (dispatch) => {
+export const addMessage = (id, messageText, meSend, date) => (dispatch) => {
   dispatch({
     type: ADD_NEW_MESSAGE,
-    payload: { id, messageText, meSend },
+    payload: { id, messageText, meSend, date },
   });
 };

@@ -3,10 +3,13 @@ import {
   SET_NEW_NAME,
   ADD_NEW_MESSAGE,
   SET_CONVERSATIONS,
+  SET_MESSAGES,
   ADD_NEW_CONVERSATION,
   DELETE_CONVERSATION,
   SET_SELECTED_CONVERSATION_ID,
-} from "./conversationsActions";
+} from "./actions/conversationsActions";
+import { SET_OTP, SET_EMAIL } from "./actions/resetActions";
+import { SET_USER } from "./actions/userActions";
 import uuid from "react-native-uuid";
 const conversationsInitialState = {
   conversations: [
@@ -62,12 +65,18 @@ const conversationsInitialState = {
 };
 
 const userInitialState = {
-  access_token: "",
-  refresh_token: "",
   username: "",
   firstName: "",
   secondName: "",
+  email: "",
+  image: "",
+  imageLink: "",
   gender: "male",
+};
+
+const resetInitialState = {
+  email: "",
+  OTP: "",
 };
 
 export function conversationsReducer(
@@ -77,6 +86,18 @@ export function conversationsReducer(
   switch (action.type) {
     case SET_CONVERSATIONS:
       return { ...state, conversations: action.payload };
+    case SET_MESSAGES:
+      return {
+        ...state,
+        conversations: state.conversations.map((conv) =>
+          conv.id === action.payload.id
+            ? {
+                ...conv,
+                conversation: action.payload.messages,
+              }
+            : conv
+        ),
+      };
     case SET_NEW_CATEGORY:
       return { ...state, category: action.payload };
     case SET_NEW_NAME:
@@ -89,7 +110,6 @@ export function conversationsReducer(
     case SET_SELECTED_CONVERSATION_ID:
       return { ...state, selectedConversationId: action.payload };
     case ADD_NEW_MESSAGE:
-      console.log("@@@@@@@@@@@@@@@@@@@@@@@", action.payload);
       return {
         ...state,
         conversations: state.conversations.map((conv) =>
@@ -102,6 +122,7 @@ export function conversationsReducer(
                     id: uuid.v4(),
                     messageText: action.payload.messageText,
                     meSend: action.payload.meSend,
+                    date: action.payload.date,
                   },
                 ],
               }
@@ -115,8 +136,19 @@ export function conversationsReducer(
 
 export function userReducer(state = userInitialState, action) {
   switch (action.type) {
-    case SET_CONVERSATIONS:
-      return { ...state, conversations: action.payload };
+    case SET_USER:
+      return { state: action.payload };
+    default:
+      return state;
+  }
+}
+
+export function resetReducer(state = resetInitialState, action) {
+  switch (action.type) {
+    case SET_OTP:
+      return { ...state, OTP: action.payload };
+    case SET_EMAIL:
+      return { ...state, email: action.payload };
     default:
       return state;
   }

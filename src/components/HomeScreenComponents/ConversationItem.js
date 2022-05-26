@@ -1,21 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { View, Text, StyleSheet, Image, Dimensions } from "react-native";
 
-const ConversationItem = ({ id, category, name, lastMessage, date }) => {
-  const [imagePath, setImagePath] = useState(null);
-  useEffect(() => {
-    if (category === "Arts & Entertainments")
-      setImagePath(require("../../assets/artsEnter.png"));
-    else if (category === "Food")
-      setImagePath(require("../../assets/foodanddrinks.png"));
-    else if (category === "Sports")
-      setImagePath(require("../../assets/sports.png"));
-    else if (category === "Traviling")
-      setImagePath(require("../../assets/travel.png"));
-  }, [category]);
+const ConversationItem = ({ name, lastMessage, date }) => {
+  const [imagePath, setImagePath] = useState(
+    require("../../assets/foodanddrinks.png")
+  );
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.shadow, styles.container]}>
       <View style={styles.wrapper}>
         <View style={styles.leftWrapper}>
           <Image style={styles.image} source={imagePath} />
@@ -28,26 +20,34 @@ const ConversationItem = ({ id, category, name, lastMessage, date }) => {
         </View>
 
         <View style={styles.rightWrapper}>
-          {/* <View style={styles.notification}>
-            <Text style={styles.notificationText}>1</Text>
-          </View> */}
           <Text style={styles.dateText}>{date}</Text>
         </View>
       </View>
-      <View style={styles.horiLine}></View>
     </View>
   );
 };
 const styles = StyleSheet.create({
+  shadow: {
+    shadowOffset: { width: 1, height: 1 },
+    shadowColor: "black",
+    shadowOpacity: 0.1,
+    elevation: 3,
+    backgroundColor: "#0000",
+  },
   container: {
-    width: "100%",
+    width: "98%",
+    marginLeft: "1%",
     height: 60,
     backgroundColor: "white",
     alignItems: "center",
+
+    borderRadius: 15,
+    marginBottom: 5,
   },
   wrapper: {
     flexDirection: "row",
     width: "100%",
+
     flex: 1,
     justifyContent: "space-between",
     padding: 10,

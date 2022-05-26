@@ -1,52 +1,69 @@
-import { useEffect, useState } from "react";
-import { View, StyleSheet, FlatList } from "react-native";
+import { useEffect, useRef } from "react";
+import { View, StyleSheet, FlatList, ImageBackground } from "react-native";
 import BottomInput from "../components/ConversationScreenComponents/BottomInput";
 import ChatBallon from "../components/ConversationScreenComponents/ChatBallon";
-import Header from "../components/ConversationScreenComponents/Header";
-
-import { useSelector } from "react-redux";
-
+import { getAllMessages } from "../configs/axiosHelper";
+import { useSelector, useDispatch } from "react-redux";
+import { setMessages } from "../redux/actions/conversationsActions";
 const ConversationScreen = ({ navigation }) => {
   const { conversations, selectedConversationId } = useSelector(
     (state) => state.conversationsReducer
   );
-
-  // console.log(conversations, selectedConversationId);
   var found = conversations.find((e) => e.id === selectedConversationId);
-  // console.log(found);
+  const dispatch = useDispatch();
+  const afterFetchMessages = (messages) => {
+    dispatch(setMessages(selectedConversationId, messages));
+  };
+
+  useEffect(() => {
+    navigation.setOptions({ title: found.name });
+    getAllMessages(selectedConversationId, afterFetchMessages);
+  }, []);
+
+  let scrollRef = useRef(null);
 
   return (
     <View style={styles.container}>
-      <View style={styles.topWrapper}>
-        <Header
-          style={styles.header}
-          navigation={navigation}
-          category={found.category}
-          name={found.name}
-        />
-        <View style={styles.chatBallonsArea}>
-          <FlatList
-            style={{ flex: 1 }}
-            inverted
-            data={[...found.conversation].reverse()}
-            keyExtractor={(item, index) => index}
-            renderItem={({ item }) => (
-              <ChatBallon
-                messageText={item.messageText}
-                meSend={item.meSend}
-                date={"12:25"}
-              />
-            )}
-          />
+      <ImageBackground
+        source={require("../assets/background.png")}
+        style={styles.backgroundImage}
+        resizeMode="cover"
+      >
+        <View style={styles.topWrapper}>
+          <View style={styles.chatBallonsArea}>
+            <FlatList
+              style={{ flex: 1 }}
+              data={[...found.conversation]}
+              keyExtractor={(item, index) => index}
+              renderItem={({ item }) => (
+                <ChatBallon
+                  messageText={item.messageText}
+                  meSend={item.meSend}
+                  date={item.date}
+                />
+              )}
+              ref={(it) => (scrollRef.current = it)}
+              onContentSizeChange={() =>
+                scrollRef.current?.scrollToEnd({ animated: false })
+              }
+            />
+          </View>
         </View>
-      </View>
-      <View>
-        <BottomInput chatId={selectedConversationId} />
-      </View>
+        <View>
+          <BottomInput chatId={selectedConversationId} />
+        </View>
+      </ImageBackground>
     </View>
   );
 };
 const styles = StyleSheet.create({
+  backgroundImage: {
+    position: "absolute",
+    flex: 1,
+    backgroundColor: "rgba(0,0,0,0.45)",
+    width: "100%",
+    height: "100%",
+  },
   container: {
     flex: 1,
     justifyContent: "space-between",
@@ -55,9 +72,7 @@ const styles = StyleSheet.create({
 
   chatBallonsArea: {
     width: "100%",
-    height: "85%",
-
-    // backgroundColor: "silver",
+    height: "100%",
   },
   topWrapper: {
     marginBottom: 60,

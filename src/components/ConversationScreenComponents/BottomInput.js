@@ -13,9 +13,13 @@ import Icon from "react-native-vector-icons/Ionicons";
 import { Audio } from "expo-av";
 
 import { useSelector, useDispatch } from "react-redux";
-import { addMessage } from "../../redux/conversationsActions";
-import axios from "../../configs/axiosHelper";
-
+import { addMessage } from "../../redux/actions/conversationsActions";
+import {
+  sendVoiceFile,
+  getTextSuggestion,
+  postNewMessage,
+} from "../../configs/axiosHelper";
+import { Color, primaryColor } from "../GlobalStyles";
 const BottomInput = ({ chatId }) => {
   const [inputText, setInputText] = useState("");
   const [pageX, setPageX] = useState(0);
@@ -28,7 +32,7 @@ const BottomInput = ({ chatId }) => {
   const [recording, setRecording] = useState();
   const [recordings, setRecordings] = useState([]);
   const [message, setMessage] = useState("");
-  const [suggestion, setSuggestion] = useState("-suggestion-");
+  const [suggestion, setSuggestion] = useState("");
   const dispatch = useDispatch();
   async function startRecording() {
     ToastAndroid.showWithGravity(
@@ -58,7 +62,6 @@ const BottomInput = ({ chatId }) => {
     }
   }
   async function stopRecording() {
-    console.log("stopping!");
     ToastAndroid.showWithGravity(
       "Done!",
       ToastAndroid.SHORT,
@@ -67,7 +70,6 @@ const BottomInput = ({ chatId }) => {
     setRecording(undefined);
     await recording.stopAndUnloadAsync();
     const uri = recording.getURI();
-    console.log(uri);
 
     let updatedRecordings = [...recordings];
     const { sound, status } = await recording.createNewLoadedSoundAsync();
@@ -84,21 +86,14 @@ const BottomInput = ({ chatId }) => {
       type: `audio/${filetype}`,
       name: filename,
     });
-    sendFiles(fd);
+    fd.append("chat_id", chatId);
+    sendVoiceFile(fd, reciveVoiceText);
     setRecordings(updatedRecordings);
   }
-  const sendFiles = async (formData) => {
-    axios({
-      method: "post",
-      url: "/paulo/upload-voice",
-      data: formData,
-      headers: { "Content-Type": "multipart/form-data" },
-    })
-      .then((resp) => {
-        dispatch(addMessage(chatId, resp.data.text, false));
-      })
-      .catch((err) => console.log("ERR", err));
+  const reciveVoiceText = (text) => {
+    dispatch(addMessage(chatId, text, false));
   };
+
   function getDurationFormatted(millis) {
     const minutes = millis / 1000 / 60;
     const minutesDisplay = Math.floor(minutes);
@@ -122,36 +117,39 @@ const BottomInput = ({ chatId }) => {
       );
     });
   }
+  const delay = 1000;
 
+  var typewatch = (function () {
+    var timer = 0;
+    return function (callback) {
+      clearTimeout(timer);
+      timer = setTimeout(callback, delay);
+    };
+  })();
+
+  const preFunction = () => {
+    getTextSuggestion(inputText, setSuggestion);
+  };
+
+  const sendMessage = () => {
+    postNewMessage(chatId, inputText.trim());
+  };
   return (
     <View style={styles.container}>
       <TextInput
+        onKeyPress={() => {
+          typewatch(preFunction);
+        }}
         onTouchStart={(e) => setPageX(e.nativeEvent.pageX)}
         onTouchEnd={(e) => {
           if (e.nativeEvent.pageX > 60 + pageX) {
-            console.log(pageX, e.nativeEvent.pageX);
             setInputText(inputText + suggestion);
             setSuggestion("");
           }
         }}
-        // onKeyPress={({ nativeEvent }) => {
-        //   if (nativeEvent.key === "Backspace") {
-        //     setInputText(
-        //       inputText.replace(suggestion, "").slice(0, inputText.length - 1)
-        //     );
-        //   } else {
-        //     console.log("char: ", nativeEvent.key);
-        //     setInputText(inputText.replace(suggestion, "") + nativeEvent.key);
-        //     console.log("inputText: ", inputText);
-        //   }
-        // }}
         onChangeText={(newText) => {
-          console.log("newText: ", newText);
           const editedText = newText.replace(suggestion, "");
-          console.log("editedText: ", editedText);
           setInputText(editedText);
-
-          // console.log("inputText:", inputText, "newText: ", newText);
         }}
         selection={{ start: inputText.length }}
         multiline={true}
@@ -168,31 +166,28 @@ const BottomInput = ({ chatId }) => {
           style={styles.sendButton}
           onPress={() => {
             if (inputText.trim() !== "") {
-              console.log(inputText, " is typed here");
-              dispatch(addMessage(chatId, inputText, true));
+              const now = new Date();
+              const current = now.getHours() + ":" + now.getMinutes();
+              dispatch(addMessage(chatId, inputText.trim(), true, current));
+              sendMessage();
             }
             setInputText("");
+            setSuggestion("");
           }}
         >
-          <Icon name="send" size={20} color="#3a3b42" />
+          <Icon name="send" size={25} color={Color} />
         </TouchableOpacity>
       ) : (
         <TouchableOpacity
           style={styles.sendButton}
           onLongPress={() => startRecording()}
           onPressOut={() => {
-            // console.log(recording);
             if (recording) {
               stopRecording();
-              console.log("mawgouda");
             }
-            console.log("mawgouda2");
-          }}
-          onPress={() => {
-            console.log("Done!");
           }}
         >
-          <Icon name="mic" size={20} color="#3a3b42" />
+          <Icon name="mic" size={25} color={Color} />
         </TouchableOpacity>
       )}
     </View>
@@ -208,15 +203,17 @@ const styles = StyleSheet.create({
   },
 
   textInput: {
-    backgroundColor: "#f3f4f7",
+    backgroundColor: "white",
     width: "83%",
     height: "100%",
     borderRadius: 50,
     marginRight: 8,
     padding: 10,
+    borderWidth: 1,
+    borderColor: primaryColor,
   },
   sendButton: {
-    backgroundColor: "#f3f4f7",
+    backgroundColor: primaryColor,
     width: 50,
     height: 50,
     borderRadius: 50,

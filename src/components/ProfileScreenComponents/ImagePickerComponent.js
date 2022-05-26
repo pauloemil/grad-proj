@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -8,31 +8,48 @@ import {
   TouchableOpacity,
 } from "react-native";
 import * as ImagePicker from "expo-image-picker";
+import { useSelector } from "react-redux";
+import { editProfileImage } from "../../configs/axiosHelper";
 
 const ImagePickerComponent = () => {
-  const [image, setImage] = React.useState(
-    "https://dummyimage.com/400x400/000/fff&text=paulo"
+  const [image, setImage] = useState(
+    "https://dummyimage.com/400x400/000/fff&text=HearMe"
   );
   const pickImage = async () => {
-    // No permissions request is necessary for launching the image library
     let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.All,
+      mediaTypes: ImagePicker.MediaTypeOptions.ALL,
       allowsEditing: true,
       aspect: [1, 1],
       quality: 1,
     });
 
-    console.log(result);
-
     if (!result.cancelled) {
       setImage(result.uri);
+      const { uri } = result;
+      let uriParts = uri.split(".");
+      let fileType = uriParts[uriParts.length - 1];
+
+      let formData = new FormData();
+      formData.append("image", {
+        uri,
+        name: `photo.${fileType}`,
+        type: `image/${fileType}`,
+      });
+
+      editProfileImage(formData);
     }
   };
+
+  let user = useSelector((state) => state.userReducer);
+  useEffect(() => {
+    user = user.state;
+    setImage(user.imageLink);
+  }, []);
+
   return (
     <View style={styles.container}>
-      {/* <Button title="Pick an image from camera roll" onPress={pickImage} /> */}
       <TouchableOpacity onPress={pickImage}>
-        <Image source={{ uri: image }} style={styles.image} />
+        <Image fadeDuration={0} source={{ uri: image }} style={styles.image} />
       </TouchableOpacity>
     </View>
   );

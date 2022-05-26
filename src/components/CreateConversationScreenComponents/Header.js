@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, Image, TouchableOpacity } from "react-native";
 import Icon from "react-native-vector-icons/Ionicons";
 
 import { useDispatch } from "react-redux";
-import { setCategory, setName } from "../../redux/conversationsActions";
+import { setCategory, setName } from "../../redux/actions/conversationsActions";
 
 const Header = ({ navigation }) => {
   const dispatch = useDispatch();
