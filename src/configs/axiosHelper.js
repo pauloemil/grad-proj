@@ -4,7 +4,7 @@ import { storeData, getData, refreshAccessToken } from "./asyncStorageHelper";
 import jwt_decode from "jwt-decode";
 
 const instance = axios.create({
-  baseURL: "http://192.168.1.4:5000/",
+  baseURL: "http://192.168.63.231:5000/", // change me to the API BASE
 });
 export default instance;
 
@@ -324,7 +324,9 @@ export const editProfileImage = async (formData) => {
         ToastAndroid.CENTER
       );
     })
-    .catch((err) => console.log("AxiosHelper editProfileImage", err.response));
+    .catch((err) =>
+      console.log("AxiosHelper editProfileImage", err, "\n", err.response.data)
+    );
 };
 
 export const sendVoiceFile = async (formData, cb) => {
@@ -341,5 +343,5 @@ export const sendVoiceFile = async (formData, cb) => {
     .then((resp) => {
       cb(resp.data.text);
     })
-    .catch((err) => console.log("AxiosHelper sendVoiceFile", err));
+    .catch((err) => console.log("AxiosHelper sendVoiceFile", err.response));
 };

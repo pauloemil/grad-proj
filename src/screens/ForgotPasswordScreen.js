@@ -18,7 +18,7 @@ const ForgotPasswordScreen = ({ navigation }) => {
     navigation.navigate("OTPScreen");
   };
   const handlePress = () => {
-    sendForgetPasssword(email, navigationHandle);
+    sendForgetPassword(email, navigationHandle);
     dispatch(setEmailAction(email));
   };
   return (

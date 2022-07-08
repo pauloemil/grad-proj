@@ -16,8 +16,9 @@ const ChatBallon = ({ messageText, meSend, date }) => {
 
   const speak = () => {
     let options = {
-      voice:
-        user.gender === "male" ? "ar-xa-x-ard-local" : "ar-xa-x-arc-network",
+      onDone: () => {
+        setIsSpeaking(false);
+      },
     };
     Speech.speak(messageText, options);
   };
@@ -33,9 +34,13 @@ const ChatBallon = ({ messageText, meSend, date }) => {
     <TouchableOpacity
       onPress={() => {
         if (meSend) {
-          if (!isSpeaking) speak();
-          else stopSpeaking();
-          setIsSpeaking(!isSpeaking);
+          if (!isSpeaking) {
+            speak();
+            setIsSpeaking(true);
+          } else {
+            stopSpeaking();
+            setIsSpeaking(false);
+          }
         }
       }}
     >
